@@ -86,6 +86,6 @@ inline float inline_predict(vw& all, example& ec)
 {
   float temp = ec.l.simple.initial;
   foreach_feature<float, vec_add>(all, ec, temp);
-  return temp;
+  return temp + all.prediction_adjustment;
 }
 }

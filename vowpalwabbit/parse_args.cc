@@ -747,8 +747,16 @@ void parse_example_tweaks(vw& all)
   ("quantile_tau", po::value<float>()->default_value(0.5), "Parameter \\tau associated with Quantile loss. Defaults to 0.5")
   ("l1", po::value<float>(&(all.l1_lambda)), "l_1 lambda")
   ("l2", po::value<float>(&(all.l2_lambda)), "l_2 lambda")
+  ("negative_sampling_rate", po::value<float>(&(all.prediction_adjustment))->default_value(1), "Should only be set for testing to adjust the prediction. It must belong to (0, 1].")
   ("named_labels", po::value<string>(&named_labels), "use names for labels (multiclass, etc.) rather than integers, argument specified all possible labels, comma-sep, eg \"--named_labels Noun,Verb,Adj,Punc\"");
   add_options(all);
+
+  // TODO: find a better way to set prediction_adjustment.
+  if (all.prediction_adjustment > 0) {
+    all.prediction_adjustment = log(all.prediction_adjustment);
+  } else {
+    all.prediction_adjustment = 0;
+  }
 
   po::variables_map& vm = all.vm;
   if (vm.count("testonly") || all.eta == 0.)

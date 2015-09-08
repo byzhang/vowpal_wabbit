@@ -539,6 +539,8 @@ struct vw {
 
   std::map< std::string, size_t> name_index_map;
 
+  float prediction_adjustment;
+
   vw();
 };
 
