@@ -566,10 +566,28 @@ void save_load_regressor(vw& all, io_buf& model_file, bool read, bool text)
 {
   uint32_t length = 1 << all.num_bits;
   uint32_t stride = 1 << all.reg.stride_shift;
+
+  // if (!read && !all.model_only_regressor_name.empty()) {
+  if (!read) {
+    FILE* model_bin_file = fopen("model.bin", "w");
+    for (uint32_t idx = 0; idx < length; ++idx) {
+      weight v = all.reg.weight_vector[stride*idx];
+      if (v == 0.) {
+        continue;
+      }
+      if (idx == 0) {
+        printf("adjust constant %f by %f\n", v, all.prediction_adjustment);
+        v += all.prediction_adjustment;
+      }
+      fwrite((char *)&idx, sizeof(idx), 1, model_bin_file);
+      fwrite((char *)&v, sizeof(v), 1, model_bin_file);
+    }
+    fclose(model_bin_file);
+  }
+
   int c = 0;
   uint32_t i = 0;
   size_t brw = 1;
-
   if(all.print_invert) { //write readable model with feature names
     weight* v;
     char buff[512];
